@@ -1,0 +1,8 @@
+setup.py
+taxifare_trainer.egg-info/PKG-INFO
+taxifare_trainer.egg-info/SOURCES.txt
+taxifare_trainer.egg-info/dependency_links.txt
+taxifare_trainer.egg-info/top_level.txt
+trainer/__init__.py
+trainer/model.py
+trainer/task.py
