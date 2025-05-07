@@ -1,44 +1,67 @@
-### 🚕 TaxiFare Prediction with TensorFlow & Vertex AI 
+```markdown
+### 🚕 TaxiFare Prediction with TensorFlow & Vertex AI
 
-This project builds and **deploys** a Deep Neural Network (DNN) model to predict New York City taxi fares using pickup/drop-off coordinates, distance, and passenger count. It includes end-to-end preprocessing, training, and **deployment on Google Cloud Vertex AI** for real-time inference.
+This project leverages Google Cloud's Vertex AI platform to build, train, and deploy a Deep Neural Network (DNN) model for predicting New York City taxi fares. The model utilizes features derived from pickup/drop-off coordinates, distance, and passenger count. The end-to-end pipeline involves data extraction from BigQuery, preprocessing, model training using TensorFlow, and deployment on Vertex AI for scalable real-time inference.
+
+## ⚙️ Architecture
+
+The architecture of this project follows these key steps:
+
+1.  **Data store in BigQuery:** The NYC Taxi Fare dataset resides in Google BigQuery.
+2.  **Export data into GCS for training in CSV Format:** Data is exported from BigQuery into Google Cloud Storage (GCS) in CSV format for training.
+3.  **Training code & Docker image:** Training code, along with any necessary dependencies, is containerized into a Docker image. This image is then used by Vertex AI for training.
+4.  **Vertex AI Training Job and Model deployment:** Vertex AI is used to run the training job using the data in GCS and the Docker image. Once trained, the model is deployed on Vertex AI for serving predictions.
+
+<img src="Architecture.png" alt="Project Architecture" width="600">
 
 ## 📊 Dataset
 
-NYC Taxi Fare dataset available on Google Cloud Storage (GCS), containing fields like:
-- Pickup and drop-off latitude/longitude  
-- Datetime of trip  
-- Passenger count  
-- Fare amount (target)
+The NYC Taxi Fare dataset, stored in Google Cloud Storage (GCS), includes the following features:
+
+* Pickup and drop-off latitude/longitude
+* Datetime of trip
+* Passenger count
+* Fare amount (target variable)
 
 ## 🧪 Feature Engineering
 
-### ✅ Scaling  
-- Longitude scaled from `[-78, -70]` to `[0, 1]`  
-- Latitude scaled from `[37, 45]` to `[0, 1]`  
+The following feature engineering techniques are applied to the raw data:
 
-### 📏 Distance Calculation  
-- Euclidean distance computed from pickup to drop-off coordinates.  
+### ✅ Scaling
 
-### 🗺️ Bucketization  
-- Discretization of scaled latitude and longitude into spatial bins.  
+* Longitude is scaled from $[-78, -70]$ to $[0, 1]$.
+* Latitude is scaled from $[37, 45]$ to $[0, 1]$.
 
-### ✖️ Feature Crossing  
-- Pickup and drop-off location crosses using `HashedCrossing`  
-- `pickup_cross dropoff → embedding → flatten`  
+### 📏 Distance Calculation
 
-### 🔎 Embedding  
-- High-cardinality hashed crosses are converted into low-dimensional dense representations (10D vectors).  
+* The Euclidean distance between pickup and drop-off coordinates is calculated.
+
+### 🗺️ Bucketization
+
+* Scaled latitude and longitude values are discretized into spatial bins.
+
+### ✖️ Feature Crossing
+
+* Pickup and drop-off location features are crossed using `HashedCrossing`.
+* The process is: `pickup_cross dropoff → embedding → flatten`.
+
+### 🔎 Embedding
+
+* High-cardinality hashed cross features are converted into low-dimensional dense representations (10-dimensional vectors).
 
 ## 🧠 Model Architecture
 
-```text
+The TensorFlow model architecture consists of the following layers:
+
+```
 Input → Feature Transform (Lambda, Discretization, HashedCrossing, Embedding) → Concatenate → Dense Layers → Output (Fare)
 ```
 
 ## 🚀 Deployment
 
-The model is exported in `SavedModel` format and deployed on **Google Vertex AI**:
-- Model uploaded to Google Cloud Storage (GCS)
-- Served using Vertex AI endpoint for scalable, real-time predictions
-- Easily accessible via REST API or SDK
+The trained model is exported in the `SavedModel` format and deployed on **Google Vertex AI**:
 
+* The `SavedModel` is uploaded to Google Cloud Storage (GCS).
+* A Vertex AI Endpoint is created to serve the model for scalable, real-time predictions.
+* Predictions can be accessed via a REST API or the Google Cloud SDK.
+```
