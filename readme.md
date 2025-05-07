@@ -1,67 +1,38 @@
-```markdown
 ### 🚕 TaxiFare Prediction with TensorFlow & Vertex AI
 
-This project leverages Google Cloud's Vertex AI platform to build, train, and deploy a Deep Neural Network (DNN) model for predicting New York City taxi fares. The model utilizes features derived from pickup/drop-off coordinates, distance, and passenger count. The end-to-end pipeline involves data extraction from BigQuery, preprocessing, model training using TensorFlow, and deployment on Vertex AI for scalable real-time inference.
+This project uses Google Cloud's Vertex AI to build, train, and deploy a DNN model for NYC taxi fare prediction. It leverages features from trip coordinates, distance, and passenger count, with an end-to-end pipeline from BigQuery to Vertex AI for real-time inference.
 
 ## ⚙️ Architecture
 
-The architecture of this project follows these key steps:
+The project architecture involves:
 
-1.  **Data store in BigQuery:** The NYC Taxi Fare dataset resides in Google BigQuery.
-2.  **Export data into GCS for training in CSV Format:** Data is exported from BigQuery into Google Cloud Storage (GCS) in CSV format for training.
-3.  **Training code & Docker image:** Training code, along with any necessary dependencies, is containerized into a Docker image. This image is then used by Vertex AI for training.
-4.  **Vertex AI Training Job and Model deployment:** Vertex AI is used to run the training job using the data in GCS and the Docker image. Once trained, the model is deployed on Vertex AI for serving predictions.
+1.  BigQuery for data storage.
+2.  Exporting data to GCS for training.
+3.  Containerizing training code with Docker.
+4.  Using Vertex AI for training and model deployment.
 
-<img src="Architecture.png" alt="Project Architecture" width="600">
+<p align="center">
+  <img src="Architecture.png" alt="Architecture Diagram" width="500">
+</p>
 
 ## 📊 Dataset
 
-The NYC Taxi Fare dataset, stored in Google Cloud Storage (GCS), includes the following features:
-
-* Pickup and drop-off latitude/longitude
-* Datetime of trip
-* Passenger count
-* Fare amount (target variable)
+The NYC Taxi Fare dataset in GCS includes: pickup/drop-off coordinates, datetime, passenger count, and fare amount.
 
 ## 🧪 Feature Engineering
 
-The following feature engineering techniques are applied to the raw data:
+Key techniques include:
 
-### ✅ Scaling
-
-* Longitude is scaled from $[-78, -70]$ to $[0, 1]$.
-* Latitude is scaled from $[37, 45]$ to $[0, 1]$.
-
-### 📏 Distance Calculation
-
-* The Euclidean distance between pickup and drop-off coordinates is calculated.
-
-### 🗺️ Bucketization
-
-* Scaled latitude and longitude values are discretized into spatial bins.
-
-### ✖️ Feature Crossing
-
-* Pickup and drop-off location features are crossed using `HashedCrossing`.
-* The process is: `pickup_cross dropoff → embedding → flatten`.
-
-### 🔎 Embedding
-
-* High-cardinality hashed cross features are converted into low-dimensional dense representations (10-dimensional vectors).
+* Scaling latitude/longitude.
+* Calculating Euclidean distance.
+* Bucketization of coordinates.
+* Feature crossing with `HashedCrossing`.
+* Embedding high-cardinality crossed features.
 
 ## 🧠 Model Architecture
 
-The TensorFlow model architecture consists of the following layers:
-
-```
-Input → Feature Transform (Lambda, Discretization, HashedCrossing, Embedding) → Concatenate → Dense Layers → Output (Fare)
-```
+TensorFlow model: `Input → Feature Transform → Concatenate → Dense Layers → Output (Fare)`
 
 ## 🚀 Deployment
 
-The trained model is exported in the `SavedModel` format and deployed on **Google Vertex AI**:
-
-* The `SavedModel` is uploaded to Google Cloud Storage (GCS).
-* A Vertex AI Endpoint is created to serve the model for scalable, real-time predictions.
-* Predictions can be accessed via a REST API or the Google Cloud SDK.
-```
+The trained `SavedModel` is deployed on **Google Vertex AI** via a Vertex AI Endpoint for scalable real-time predictions accessible through REST API or the SDK.
